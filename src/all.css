@@ -1,0 +1,30 @@
+body{
+    background-color: rgba(0, 0, 0, 0.2);
+}
+.MuiTabs-indicator{
+    background-color: black !important
+}
+.MuiTab-wrapper{
+    font-weight: bold
+}
+.MuiBox-root-122{
+    padding: 10px !important;
+    text-align: center;
+    padding-top: 20% !important;
+}
+.MuiBox-root-133{
+    padding: 10px !important;
+    text-align: center;
+    padding-top: 5% !important;
+}
+.MuiTabs-root{
+    background-color: white !important;
+    color: black !important
+}
+#scrollNone::-webkit-scrollbar {
+    width: 0px;  /* Remove scrollbar space */
+    background: transparent;  /* Optional: just make scrollbar invisible */
+}
+.ant-select-dropdown{
+    z-index: 1800 !important;
+}

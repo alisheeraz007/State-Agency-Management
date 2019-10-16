@@ -97,7 +97,7 @@ class Filter extends React.Component {
         const { Option } = Select;
         return (
             <Dialog className={classes.main} fullScreen open={this.props.open} onClose={this.handleClose} TransitionComponent={Transition}>
-                <AppBar className={classes.appBar}>
+                <AppBar  className={classes.appBar}>
                     <Toolbar>
                         <IconButton edge="start" color="inherit" onClick={this.handleClose} aria-label="close">
                             <CloseIcon />
@@ -110,7 +110,7 @@ class Filter extends React.Component {
             </Button>
                     </Toolbar>
                 </AppBar>
-                <Paper className={classes.form}>
+                <Paper id="scrollNone" className={classes.form}>
                     <form>
                         <Select
                             style={{ width: "96%", display: "inline-block" }}

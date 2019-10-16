@@ -150,7 +150,7 @@ class AddData extends Component {
             description: this.state.description,
             address: this.state.address,
             demandingPrice: this.state.demandingPrice,
-            entryNo: this.entryNo()
+            entryNo: this.props.edit ? this.state.entryNo : this.entryNo()
         }
         firebase.database().ref("wholeData").child(this.props.state.personalInfo.uid)
             .child("added").child(obj.entryNo).update(obj)
@@ -171,6 +171,7 @@ class AddData extends Component {
                     address: "",
                     demandingPrice: ""
                 })
+                this.props.editFalse(ev)
                 success("Successfully Added")
             })
             .catch((error) => {
@@ -180,15 +181,48 @@ class AddData extends Component {
             });
     }
 
+
+
+    componentWillMount() {
+        if (this.props.edit) {
+            let obj = this.props.obj
+            this.setState({
+                ownerName: obj.ownerName,
+                ownerNumber: obj.ownerNumber,
+                category: obj.category,
+                rentOrOwnership: obj.rentOrOwnership,
+                floor: obj.floor,
+                bathrooms: obj.bathrooms,
+                bedrooms: obj.bedrooms,
+                finalPrice: obj.finalPrice,
+                advance: obj.advance,
+                timePeriod: obj.timePeriod,
+                description: obj.description,
+                address: obj.address,
+                demandingPrice: obj.demandingPrice,
+                entryNo: obj.entryNo
+            })
+        }
+    }
+
     render() {
+        // console.log(this.state.entryNo)
         const { classes } = this.props;
         const { Option } = Select;
         const { TextArea } = Input;
         return (
             <>
-                <Header login="true" add={true} />
+                <Header login="true" add={true} seemore={false} />
                 <Paper id="scrollNone" className={classes.form}>
-                    <h1>Add flat details</h1>
+                    {this.props.edit ?
+                        <h1>Edit
+                            <span>
+                                <Icon onClick={this.props.editFalse} style={{color: "#ff00009e", float: "right"}} type="close-circle" theme="filled" />
+                            </span>
+                        </h1>
+                        :
+                        <h1>Add flat details</h1>
+                    }
                     <Divider />
                     <form className={classes.formm}>
                         <div>
@@ -227,6 +261,7 @@ class AddData extends Component {
                             <Select
                                 style={{ width: "96%", display: "inline-block" }}
                                 size="large"
+                                value={this.state.category}
                                 showSearch
                                 placeholder="Choose a category"
                                 optionFilterProp="children"
@@ -325,6 +360,7 @@ class AddData extends Component {
                             }
                             <Select
                                 size="large"
+                                value={this.state.rentOrOwnership}
                                 style={{ width: "47%", display: "inline-block" }}
                                 showSearch
                                 placeholder="Rent Or Ownership ?"
@@ -425,14 +461,35 @@ class AddData extends Component {
                             />
                             <br />
                             <br />
-                            <Button
-                                style={{ float: "right", background: "black", borderColor: "black", width: 100 }}
-                                type="primary"
-                                loading={this.state.Loading}
-                                onClick={(ev) => this.add(ev)}
-                            >
-                                Add
+                            {!this.props.edit ?
+                                <Button
+                                    style={{ float: "right", background: "black", borderColor: "black", width: 100 }}
+                                    type="primary"
+                                    loading={this.state.Loading}
+                                    onClick={(ev) => this.add(ev)}
+                                >
+                                    Add
         </Button>
+                                :
+                                <>
+                                    <Button
+                                        style={{ float: "right", background: "#1890ff", borderColor: "#1890ff", width: 100 }}
+                                        type="primary"
+                                        loading={this.state.Loading}
+                                        onClick={(ev) => this.add(ev)}
+                                    >
+                                        Update
+        </Button>
+                                    <Button
+                                        style={{ float: "right", background: "#ff00009e", borderColor: "#ff00009e", width: 100 }}
+                                        type="primary"
+                                        // loading={this.state.Loading}
+                                        onClick={(ev) => this.props.editFalse(ev)}
+                                    >
+                                        Cancel
+        </Button>
+                                </>
+                            }
                             <br />
                             <br />
                         </div>

@@ -28,3 +28,8 @@ body{
 .ant-select-dropdown{
     z-index: 1800 !important;
 }
+
+.ant-btn-primary{
+    background: #ff00009e !important;
+    border-color: #ff00009e !important;
+}

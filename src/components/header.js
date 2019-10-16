@@ -155,7 +155,7 @@ class Header extends Component {
                                 <MenuIcon />
                             </IconButton>
                             :
-                            this.props.seemore ?
+                            this.props.back ?
                                 <IconButton onClick={this.back} edge="start" color="inherit" aria-label="menu">
                                     <ArrowBackIosIcon />
                                 </IconButton>
@@ -166,7 +166,7 @@ class Header extends Component {
                                 this.props.state.personalInfo ?
                                     <>
                                         {this.props.state.personalInfo.stateName}
-                                        {!this.props.seemore ?
+                                        {!this.props.add ?
                                             <IconButton className={classes.filter} onClick={this.filter} edge="start" color="inherit" aria-label="menu">
                                                 Filter <FilterListIcon />
                                             </IconButton>

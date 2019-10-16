@@ -315,7 +315,7 @@ class OwnersipData extends Component {
         const { classes } = this.props;
         return (
             <>
-                <Header open={this.state.open} login="true" all={true} gettingValues={this.gettingValues} filter={this.filter} />
+                <Header open={this.state.open} login="true"  seemore={false} ownership={true} gettingValues={this.gettingValues} filter={this.filter} />
                 <Paper id="scrollNone" className={classes.form}>
                     {this.props.state.added ?
                         !this.state.matchArray.length ?
@@ -430,7 +430,7 @@ class OwnersipData extends Component {
                                         : null
                                 )
                             })
-                        : null}
+                        : "Loading....."}
                 </Paper>
             </>
         )

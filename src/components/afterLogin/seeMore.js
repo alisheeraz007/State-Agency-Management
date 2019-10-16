@@ -6,7 +6,8 @@ import { Paper } from '@material-ui/core';
 import { withStyles } from '@material-ui/core';
 import { withRouter } from 'react-router-dom'
 import { getData } from '../../actions/action';
-import { Divider } from 'antd';
+import { Divider, Icon, Button, Modal } from 'antd';
+import Add from './add';
 
 const styles = theme => ({
     form: {
@@ -17,9 +18,9 @@ const styles = theme => ({
             width: "90%",
             height: "80vh",
             position: "absolute",
-            top: "60%",
+            top: "87%",
             left: "50%",
-            transform: "translate(-50%,-60%)",
+            transform: "translate(-50%,-87%)",
         },
         [theme.breakpoints.up('sm')]: {
             overflowY: "scroll",
@@ -85,6 +86,11 @@ const styles = theme => ({
         [theme.breakpoints.up('md')]: {
             width: "60%"
         },
+    },
+    editIcon: {
+        float: "right",
+        marginRight: 20,
+        color: "#1890ff",
     }
 });
 
@@ -92,8 +98,51 @@ class SeeMore extends Component {
     constructor() {
         super()
         this.state = {
-            data: null
+            data: null,
+            edit: false,
+            visible: false,
+            confirmLoading: false
         }
+    }
+
+    editTrue = () => {
+        this.setState({
+            edit: true
+        })
+    }
+
+    editFalse = () => {
+        this.setState({
+            edit: false
+        })
+    }
+
+    delete = (entryNo) => {
+        this.setState({
+            confirmLoading: true
+        }, () => {
+            firebase.database().ref("wholeData").child(this.props.state.personalInfo.uid)
+                .child("added").child(entryNo).remove()
+                .then((res) => {
+                    this.setState({
+                        visible: false,
+                        confirmLoading: false
+                    })
+                    this.props.history.goBack()
+                })
+        })
+    }
+
+    handleCancel = () => {
+        this.setState({
+            visible: false
+        })
+    }
+
+    visibleTrue=()=>{
+        this.setState({
+            visible: true
+        })
     }
 
     render() {
@@ -107,101 +156,121 @@ class SeeMore extends Component {
         }
         return (
             <>
-                <Header seemore={true} />
-                <Paper id="scrollNone" className={classes.form}>
-                    {data ?
-                        <>
-                            <h1 className={classes.head} style={{ width: "100%", textAlign: "center" }}>{data.category}</h1>
-                            <Divider style={{ margin: 0 }} />
-                            <div className={classes.roundDiv}>
-                                <h3 className={classes.innerHead}>Owner Details</h3>
+                <Header back={true} seemore={false} add={true} />
+                {this.state.edit ?
+                    <Add edit={true} editFalse={this.editFalse} obj={data} />
+                    :
+                    <Paper id="scrollNone" className={classes.form}>
+                        {data ?
+                            <>
+                                <h1 className={classes.head} style={{ width: "100%", textAlign: "left" }}>{data.category}
+                                    <span className={classes.editIcon}>
+                                        <Icon onClick={this.editTrue} type="edit" theme="filled" />
+                                        <Icon onClick={this.visibleTrue} style={{ color: "#ff00009e", marginLeft: 10 }} type="delete" theme="filled" />
+                                            <Modal
+                                                title="Confirmation"
+                                                visible={this.state.visible}
+                                                onOk={(ev) => this.delete(data.entryNo)}
+                                                okText="Delete"
+                                                
+                                                confirmLoading={this.state.confirmLoading}
+                                                onCancel={this.handleCancel}
+                                            >
+                                                <p>Are you sure you want to delete <span style={{ fontWeight: "bold" }}>{data.entryNo}</span> this entry ?</p>
+                                            </Modal>
+                                    </span>
+                                </h1>
                                 <Divider style={{ margin: 0 }} />
-                                <table className={classes.table} style={{ textAlign: "left" }}>
-                                    <tbody>
-                                        <tr>
-                                            <th>Owner's Name:</th>
-                                            <td>&nbsp;{data.ownerName}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Owner's Number:</th>
-                                            <td>&nbsp;{data.ownerNumber}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div className={classes.roundDiv}>
-                                <h3 className={classes.innerHead}>{data.category} Details</h3>
-                                <Divider style={{ margin: 0 }} />
-                                <table className={classes.table} style={{ textAlign: "left" }}>
-                                    <tbody>
-                                        {data.rentOrOwnership ?
+                                <div className={classes.roundDiv}>
+                                    <h3 className={classes.innerHead}>Owner Details</h3>
+                                    <Divider style={{ margin: 0 }} />
+                                    <table className={classes.table} style={{ textAlign: "left" }}>
+                                        <tbody>
                                             <tr>
-                                                <th>sell Type:</th>
-                                                <td>&nbsp;{data.rentOrOwnership}</td>
+                                                <th>Owner's Name:</th>
+                                                <td>&nbsp;{data.ownerName}</td>
                                             </tr>
-                                            : null}
-                                        {data.floor ?
                                             <tr>
-                                                <th>Floor:</th>
-                                                <td>&nbsp;{data.floor}</td>
+                                                <th>Owner's Number:</th>
+                                                <td>&nbsp;{data.ownerNumber}</td>
                                             </tr>
-                                            : null}
-                                        {data.bedrooms ?
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div className={classes.roundDiv}>
+                                    <h3 className={classes.innerHead}>{data.category} Details</h3>
+                                    <Divider style={{ margin: 0 }} />
+                                    <table className={classes.table} style={{ textAlign: "left" }}>
+                                        <tbody>
+                                            {data.rentOrOwnership ?
+                                                <tr>
+                                                    <th>sell Type:</th>
+                                                    <td>&nbsp;{data.rentOrOwnership}</td>
+                                                </tr>
+                                                : null}
+                                            {data.floor ?
+                                                <tr>
+                                                    <th>Floor:</th>
+                                                    <td>&nbsp;{data.floor}</td>
+                                                </tr>
+                                                : null}
+                                            {data.bedrooms ?
+                                                <tr>
+                                                    <th>Bedrooms:</th>
+                                                    <td>&nbsp;{data.bedrooms}</td>
+                                                </tr>
+                                                : null}
+                                            {data.bathrooms ?
+                                                <tr>
+                                                    <th>Bathrooms:</th>
+                                                    <td>&nbsp;{data.bathrooms}</td>
+                                                </tr>
+                                                : null}
                                             <tr>
-                                                <th>Bedrooms:</th>
-                                                <td>&nbsp;{data.bedrooms}</td>
+                                                <th>Telling Price:</th>
+                                                <td> &nbsp;{data.demandingPrice}</td>
                                             </tr>
-                                            : null}
-                                        {data.bathrooms ?
                                             <tr>
-                                                <th>Bathrooms:</th>
-                                                <td>&nbsp;{data.bathrooms}</td>
+                                                <th>Final Price:</th>
+                                                <td>&nbsp;{data.finalPrice}</td>
                                             </tr>
-                                            : null}
-                                        <tr>
-                                            <th>Telling Price:</th>
-                                            <td> &nbsp;{data.demandingPrice}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Final Price:</th>
-                                            <td>&nbsp;{data.finalPrice}</td>
-                                        </tr>
 
-                                        {data.advance ?
+                                            {data.advance ?
+                                                <tr>
+                                                    <th>Advance:</th>
+                                                    <td>&nbsp;{data.advance}</td>
+                                                </tr>
+                                                : null}
+                                            {data.timePeriod ?
+                                                <tr>
+                                                    <th>Time Period:</th>
+                                                    <td>&nbsp;{data.timePeriod}</td>
+                                                </tr>
+                                                : null}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div className={classes.roundDiv}>
+                                    <h3 className={classes.innerHead}>More details</h3>
+                                    <Divider style={{ margin: 0 }} />
+                                    <table style={{ textAlign: "left" }}>
+                                        <tbody>
                                             <tr>
-                                                <th>Advance:</th>
-                                                <td>&nbsp;{data.advance}</td>
+                                                <th style={{ verticalAlign: "text-top" }}>Descriptions:</th>
+                                                <td>&nbsp;{data.description}</td>
                                             </tr>
-                                            : null}
-                                        {data.timePeriod ?
+                                            <br />
                                             <tr>
-                                                <th>Time Period:</th>
-                                                <td>&nbsp;{data.timePeriod}</td>
+                                                <th style={{ verticalAlign: "text-top" }}>Address:</th>
+                                                <td>&nbsp;{data.address}</td>
                                             </tr>
-                                            : null}
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div className={classes.roundDiv}>
-                                <h3 className={classes.innerHead}>More details</h3>
-                                <Divider style={{ margin: 0 }} />
-                                <table style={{ textAlign: "left" }}>
-                                    <tbody>
-                                        <tr>
-                                            <th style={{ verticalAlign: "text-top" }}>Descriptions:</th>
-                                            <td>&nbsp;{data.description}</td>
-                                        </tr>
-                                        <br />
-                                        <tr>
-                                            <th style={{ verticalAlign: "text-top" }}>Address:</th>
-                                            <td>&nbsp;{data.address}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </>
-                        : "Loading....."}
-                </Paper>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </>
+                            : "Loading....."}
+                    </Paper>
+                }
             </>
         )
     }

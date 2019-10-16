@@ -426,7 +426,7 @@ class AllData extends Component {
                                     </Paper>
                                 )
                             })
-                        : null}
+                        : "Loading....."}
                 </Paper>
             </>
         )
